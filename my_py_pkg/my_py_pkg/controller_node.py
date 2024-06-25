@@ -82,10 +82,9 @@ class ControllerNode(Node):
 
             angle_diff = goal_angle - yaw
 
-            # Normalize angle_diff to be within [-pi, pi]
             angle_diff = math.atan2(math.sin(angle_diff), math.cos(angle_diff))
 
-            if abs(angle_diff) > 0.1 and not self.obstacle_mode:  # Rotate towards the goal
+            if abs(angle_diff) > 0.1 and not self.obstacle_mode:  # Rotate to the goal
                 msg.angular.z = 0.2 if angle_diff > 0 else -0.2
             elif any(self.laser_msg.ranges[i] < 1.0 for i in range(0, 270)):  # Obstacle detected
                 self.obstacle_mode = True
@@ -111,7 +110,6 @@ class ControllerNode(Node):
                     msg.angular.z = random.uniform(-0.02, -0.04)
                     self.get_logger().info('Obstacle detected on left')
             else:
-                # No obstacle, move forward
                 self.rotating = False
                 self.rotating_value = 0.0
                 self.obstacle_mode = False
