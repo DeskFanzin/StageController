@@ -4,6 +4,7 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist, Quaternion
 import math
+import random
 
 
 class ControllerNode(Node):
@@ -86,9 +87,9 @@ class ControllerNode(Node):
 
             if abs(angle_diff) > 0.1 and not self.obstacle_mode:  # Rotate towards the goal
                 msg.angular.z = 0.2 if angle_diff > 0 else -0.2
-            elif any(self.laser_msg.ranges[i] < 0.8 for i in range(0, 270)):  # Obstacle detected
+            elif any(self.laser_msg.ranges[i] < 1.0 for i in range(0, 270)):  # Obstacle detected
                 self.obstacle_mode = True
-                if any(self.laser_msg.ranges[i] < 0.8 for i in range(115, 155)):  # Obstacle in front
+                if any(self.laser_msg.ranges[i] < 1.0 for i in range(120, 150)):  # Obstacle in front
                     msg.linear.x = 0.0
                     if angle_diff > 0 and not self.rotating:
                         msg.angular.z = -0.25 
@@ -101,13 +102,13 @@ class ControllerNode(Node):
                     elif self.rotating == True:
                         msg.angular.z = self.rotating_value
                     self.get_logger().info('Obstacle detected in front')
-                elif any(self.laser_msg.ranges[i] < 1.5 for i in range(0, 116)):  # Obstacle on the right
+                elif any(self.laser_msg.ranges[i] < 1.0 for i in range(0, 121)):  # Obstacle on the right
                     msg.linear.x = 0.2
-                    msg.angular.z = 0.07
+                    msg.angular.z = random.uniform(0.02, 0.04)
                     self.get_logger().info('Obstacle detected on right')
-                elif any(self.laser_msg.ranges[i] < 1.5 for i in range(156, 270)):  # Obstacle on the left
+                elif any(self.laser_msg.ranges[i] < 1.0 for i in range(151, 270)):  # Obstacle on the left
                     msg.linear.x = 0.2
-                    msg.angular.z = -0.07
+                    msg.angular.z = random.uniform(-0.02, -0.04)
                     self.get_logger().info('Obstacle detected on left')
             else:
                 # No obstacle, move forward
